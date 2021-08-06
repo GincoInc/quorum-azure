@@ -1,109 +1,108 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "env": {
-        "type": "string",
-        "defaultValue": "dev",
-        "metadata": {
-          "description": "The environment we're deploying to dev, stage, prod"
-        }
-      },
-      "bcClient": {
-        "type": "string",
-        "defaultValue": "besu",
-        "metadata": {
-          "description": "The blockchain client you are using, ie. besu or goq (goquorum)"
-        }
-      },
-      "location": {
-        "type": "string",
-        "defaultValue": "[resourceGroup().location]",
-        "metadata": {
-          "description": "The location of the resource"
-        }
-      },
-      "vnetAddressCIDR": {
-        "defaultValue": "10.0.0.0/16",
-        "metadata": {
-          "description": "VNet Address Prefix"
-        },
-        "type": "string"
-      },
-      "subnet1AddressCIDR": {
-        "defaultValue": "10.0.0.0/16",
-        "metadata": {
-          "description": "Subnet1 Address Prefix"
-        },
-        "type": "string"
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "env": {
+      "type": "string",
+      "defaultValue": "dev",
+      "metadata": {
+        "description": "The environment we're deploying to dev, stage, prod"
       }
- 
     },
-    "variables": {
-      "apiVersionVirtualNetworks": "2020-05-01",
-      "apiVersionNetworkSecurityGroups": "2018-11-01",
-      "apiVersionManangedClusters": "2020-09-01",
-      "apiVersionUserManangedIdentity": "2018-11-30",
-      "apiVersionRoleAssignments": "2018-09-01-preview",
-      "apiVersionKeyVault": "2018-02-14",
-      "apiVersionLogAnalytics": "2020-03-01-preview",
-      "kubernetesVersion": "1.20.5",
-      "namePrefix": "[concat(parameters('bcClient'), '-', parameters('env') )]",
-      "vnetName": "[concat(variables('namePrefix'), '-vnet')]",
-      "vnetRef": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-      "subnet1Name": "[concat(variables('namePrefix'), '-subnet1')]",
-      "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
-      "nsgName": "[concat(variables('namePrefix'), '-nsg')]",
-      "opsManagedIdentity": "[concat(variables('namePrefix'), '-ops-identity')]",
-      "acrName": "[concat(parameters('bcClient'), parameters('env') )]",
-      "clusterName": "[concat(variables('namePrefix'), '-cluster')]",
-      "aksNodeResourceGroupName": "[concat('MC_', resourceGroup().name, '_', variables('clusterName'), '_', parameters('location'))]",
-      "aksNodeResourceGroupId": "[concat(subscription().id, '/resourcegroups/', variables('aksNodeResourceGroupName'))]",
-      "aksNodeCount": 6,
-      "aksNodeVmSize": "Standard_D2a_v4",
-      "aksNodeDiskSizeGB": 100,
-      "keyVaultName": "[concat(variables('namePrefix'), '-vault')]",
-      "keyVaultRef": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
-      "logsAnalyticsWorkspaceName": "[concat(variables('namePrefix'), '-logs')]",
-      "actionGroup": "[concat(variables('namePrefix'), '-alerts')]",
-      "alertsEmail": "",
-      "managedIdentityOperatorRoleId": "f1a07417-d97a-45cb-824c-7a7467783830",
-      "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
-      "virtualMachineContributorRoleId": "9980e02c-c2be-4d73-94e8-173b1dc7cf3c",
-      "monitoringMetricsPublisherRoleId": "3913510d-42f4-4e42-8a64-420c390055eb",
-      "readerRoleId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
-      "aksClusterAdminRoleId": "0ab0b1a8-8aac-4efd-b8c2-3ee1fb270be8",
-      "networkContributorRoleId": "4d97b98b-1d4f-4787-a291-c67834d212e7",
-      "serviceBusReceiverRoleId": "4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0",
-      "serviceBusSenderRoleId": "69a216fc-b8fb-44d8-bc22-1f3c2cd27a39"
+    "bcClient": {
+      "type": "string",
+      "defaultValue": "besu",
+      "metadata": {
+        "description": "The blockchain client you are using, ie. besu or goq (goquorum)"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The location of the resource"
+      }
+    },
+    "vnetAddressCIDR": {
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "VNet Address Prefix"
+      },
+      "type": "string"
+    },
+    "subnet1AddressCIDR": {
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "Subnet1 Address Prefix"
+      },
+      "type": "string"
+    }
+  },
+  "variables": {
+    "apiVersionVirtualNetworks": "2020-05-01",
+    "apiVersionNetworkSecurityGroups": "2018-11-01",
+    "apiVersionManangedClusters": "2020-09-01",
+    "apiVersionUserManangedIdentity": "2018-11-30",
+    "apiVersionRoleAssignments": "2018-09-01-preview",
+    "apiVersionKeyVault": "2018-02-14",
+    "apiVersionLogAnalytics": "2020-03-01-preview",
+    "kubernetesVersion": "1.20.5",
+    "namePrefix": "[concat(parameters('bcClient'), '-', parameters('env') )]",
+    "vnetName": "[concat(variables('namePrefix'), '-vnet')]",
+    "vnetRef": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+    "subnet1Name": "[concat(variables('namePrefix'), '-subnet1')]",
+    "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
+    "nsgName": "[concat(variables('namePrefix'), '-nsg')]",
+    "opsManagedIdentity": "[concat(variables('namePrefix'), '-ops-identity')]",
+    "acrName": "[concat(parameters('bcClient'), parameters('env') )]",
+    "clusterName": "[concat(variables('namePrefix'), '-cluster')]",
+    "aksNodeResourceGroupName": "[concat('MC_', resourceGroup().name, '_', variables('clusterName'), '_', parameters('location'))]",
+    "aksNodeResourceGroupId": "[concat(subscription().id, '/resourcegroups/', variables('aksNodeResourceGroupName'))]",
+    "aksNodeCount": 6,
+    "aksNodeVmSize": "Standard_D2a_v4",
+    "aksNodeDiskSizeGB": 100,
+    "keyVaultName": "[concat(variables('namePrefix'), '-vault')]",
+    "keyVaultRef": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+    "logsAnalyticsWorkspaceName": "[concat(variables('namePrefix'), '-logs')]",
+    "actionGroup": "[concat(variables('namePrefix'), '-alerts')]",
+    "alertsEmail": "",
+    "managedIdentityOperatorRoleId": "f1a07417-d97a-45cb-824c-7a7467783830",
+    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+    "virtualMachineContributorRoleId": "9980e02c-c2be-4d73-94e8-173b1dc7cf3c",
+    "monitoringMetricsPublisherRoleId": "3913510d-42f4-4e42-8a64-420c390055eb",
+    "readerRoleId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
+    "aksClusterAdminRoleId": "0ab0b1a8-8aac-4efd-b8c2-3ee1fb270be8",
+    "networkContributorRoleId": "4d97b98b-1d4f-4787-a291-c67834d212e7",
+    "serviceBusReceiverRoleId": "4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0",
+    "serviceBusSenderRoleId": "69a216fc-b8fb-44d8-bc22-1f3c2cd27a39"
 
-     },
-    "resources": [
-      {
-        "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-        "name": "[variables('opsManagedIdentity')]",
-        "apiVersion": "[variables('apiVersionUserManangedIdentity')]",
-        "location": "[parameters('location')]"
-      },
-      {
-        "type": "Microsoft.OperationalInsights/workspaces",
-        "apiVersion": "[variables('apiVersionLogAnalytics')]",
-        "name": "[variables('logsAnalyticsWorkspaceName')]",
-        "location": "[parameters('location')]",
-        "properties": {
-          "sku": {
-            "name": "PerGB2018"
-          },
-          "retentionInDays": 60
-        }
-      },
-      {
-        "type": "Microsoft.Network/virtualNetworks",
-        "apiVersion": "[variables('apiVersionVirtualNetworks')]",
-        "name": "[variables('vnetName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/',variables('opsManagedIdentity'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "name": "[variables('opsManagedIdentity')]",
+      "apiVersion": "[variables('apiVersionUserManangedIdentity')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "[variables('apiVersionLogAnalytics')]",
+      "name": "[variables('logsAnalyticsWorkspaceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 60
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "[variables('apiVersionVirtualNetworks')]",
+      "name": "[variables('vnetName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/',variables('opsManagedIdentity'))]"
         ],
         "properties": {
           "addressSpace": {
@@ -137,91 +136,91 @@
             }
           }
         ]
-      },    
-      {
-        "type": "Microsoft.Network/networkSecurityGroups",
-        "apiVersion": "[variables('apiVersionNetworkSecurityGroups')]",
-        "name": "[variables('nsgName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
-        ],
-        "tags": {
-          "displayName": "Network Security Group"
-        },
-        "properties": {
-          "securityRules": [
-            {
-              "name": "allow-ssh",
-              "properties": {
-                "description": "Allow SSH",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "22",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 320,
-                "direction": "Inbound"
-              }
-            }
-          ]
-        }
+    },    
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "[variables('apiVersionNetworkSecurityGroups')]",
+      "name": "[variables('nsgName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
+      ],
+      "tags": {
+        "displayName": "Network Security Group"
       },
-      {
-        "type": "Microsoft.KeyVault/vaults",
-        "apiVersion": "[variables('apiVersionKeyVault')]",
-        "name": "[variables('keyVaultName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
-        ],
-        "properties": {
-          "enableSoftDelete": true,
-          "enabledForDeployment": true,
-          "enabledForDiskEncryption": false,
-          "enabledForTemplateDeployment": false,
-          "tenantId": "[subscription().tenantId]",
-          "accessPolicies": [
-            {
-              "tenantId": "[reference(variables('opsManagedIdentity')).tenantId]",
-              "objectId": "[reference(variables('opsManagedIdentity')).principalId]",
-              "permissions": {
-                "keys": [
-                  "get"
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-ssh",
+            "properties": {
+              "description": "Allow SSH",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 320,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "[variables('apiVersionKeyVault')]",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
+      ],
+      "properties": {
+        "enableSoftDelete": true,
+        "enabledForDeployment": true,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[reference(variables('opsManagedIdentity')).tenantId]",
+            "objectId": "[reference(variables('opsManagedIdentity')).principalId]",
+            "permissions": {
+              "keys": [
+                "get"
                 ],
                 "secrets": [
                   "get",
                   "set"
                 ]
-              }
             }
-          ],
-          "sku": {
-            "name": "premium",
-            "family": "A"
-          },
-          "networkAcls": {
-            "defaultAction": "Deny",
-            "bypass": "AzureServices",
-            "virtualNetworkRules": [
-              {
-                "id": "[variables('subnet1Ref')]"
-              }
-            ]
           }
+        ],
+        "sku": {
+          "name": "premium",
+          "family": "A"
+        },
+        "networkAcls": {
+          "defaultAction": "Deny",
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [
+            {
+              "id": "[variables('subnet1Ref')]"
+            }
+          ]
         }
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-        "apiVersion": "2018-09-01-preview",
-        "name": "[concat(variables('keyVaultName'),'/Microsoft.Authorization/', guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-akv-reader-ra'))]",
-        "dependsOn": [
-          "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
+      "apiVersion": "2018-09-01-preview",
+      "name": "[concat(variables('keyVaultName'),'/Microsoft.Authorization/', guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-akv-reader-ra'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]"
         ],
         "properties": {
           "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleId'))]",
@@ -229,195 +228,195 @@
           "scope": "[variables('keyVaultRef')]",
           "principalType": "ServicePrincipal"
         }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-sb-receiver-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]"
+        ],
+        "properties": {
+          "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('serviceBusReceiverRoleId'))]",
+          "principalId":  "[reference(variables('opsManagedIdentity')).principalId]",
+          "scope": "[resourceGroup().id]",
+          "principalType": "ServicePrincipal"
+        }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-sb-sender-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]"
+        ],
+        "properties": {
+          "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('serviceBusSenderRoleId'))]",
+          "principalId":  "[reference(variables('opsManagedIdentity')).principalId]",
+          "scope": "[resourceGroup().id]",
+          "principalType": "ServicePrincipal"
+        }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-aks-nc-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('networkContributorRoleId'))]",
+        "principalId": "[reference(variables('opsManagedIdentity')).principalId]",
+        "scope": "[resourceGroup().id]",
+        "principalType": "ServicePrincipal"
+      }
+    },   
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-aks-admin-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('aksClusterAdminRoleId'))]",
+        "principalId": "[reference(variables('opsManagedIdentity')).principalId]",
+        "scope": "[resourceGroup().id]",
+        "principalType": "ServicePrincipal"
+      }
+    },       
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-aks-mid-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('managedIdentityOperatorRoleId'))]",
+        "principalId": "[reference(variables('opsManagedIdentity')).principalId]",
+        "scope": "[resourceGroup().id]",
+        "principalType": "ServicePrincipal"
+      }
+    },  
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "name": "[variables('acrName')]",
+      "apiVersion": "2019-12-01-preview",
+      "location": "[parameters('location')]",
+      "tags": {
+        "container.registry": "[variables('acrName')]"
       },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-sb-receiver-ra')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]"
-        ],
-        "properties": {
-            "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('serviceBusReceiverRoleId'))]",
-            "principalId":  "[reference(variables('opsManagedIdentity')).principalId]",
-            "scope": "[resourceGroup().id]",
-            "principalType": "ServicePrincipal"
-        }
+      "sku": {
+        "name": "Premium",
+        "tier": "Premium"
       },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-sb-sender-ra')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]"
-        ],
-        "properties": {
-            "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('serviceBusSenderRoleId'))]",
-            "principalId":  "[reference(variables('opsManagedIdentity')).principalId]",
-            "scope": "[resourceGroup().id]",
-            "principalType": "ServicePrincipal"
-        }
-      },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-aks-nc-ra')]",
-        "dependsOn": [
-            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
-            "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-        ],
-        "properties": {
-            "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('networkContributorRoleId'))]",
-            "principalId": "[reference(variables('opsManagedIdentity')).principalId]",
-            "scope": "[resourceGroup().id]",
-            "principalType": "ServicePrincipal"
-        }
-      },   
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-aks-admin-ra')]",
-        "dependsOn": [
-            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
-            "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-        ],
-        "properties": {
-            "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('aksClusterAdminRoleId'))]",
-            "principalId": "[reference(variables('opsManagedIdentity')).principalId]",
-            "scope": "[resourceGroup().id]",
-            "principalType": "ServicePrincipal"
-        }
-      },       
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-aks-mid-ra')]",
-        "dependsOn": [
-            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
-            "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-        ],
-        "properties": {
-            "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('managedIdentityOperatorRoleId'))]",
-            "principalId": "[reference(variables('opsManagedIdentity')).principalId]",
-            "scope": "[resourceGroup().id]",
-            "principalType": "ServicePrincipal"
-        }
-      },  
-      {
-        "type": "Microsoft.ContainerRegistry/registries",
-        "name": "[variables('acrName')]",
-        "apiVersion": "2019-12-01-preview",
-        "location": "[parameters('location')]",
-        "tags": {
-          "container.registry": "[variables('acrName')]"
-        },
-        "sku": {
-          "name": "Premium",
-          "tier": "Premium"
-        },
-        "properties": {
-          "adminUserEnabled": false
-        }
-      },
-  
-      {
-        "type":  "Microsoft.ContainerService/managedClusters",
-        "apiVersion": "[variables('apiVersionManangedClusters')]",
-        "name": "[variables('clusterName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
-          "[resourceId('Microsoft.OperationalInsights/workspaces/',variables('logsAnalyticsWorkspaceName'))]"
-        ],
-        "properties": {
-          "kubernetesVersion": "[variables('kubernetesVersion')]",
-          "dnsPrefix": "[variables('namePrefix')]",
-          "addonProfiles": {
-            "KubeDashboard": {
-              "enabled": false
+      "properties": {
+        "adminUserEnabled": false
+      }
+    },
+
+    {
+      "type":  "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "[variables('apiVersionManangedClusters')]",
+      "name": "[variables('clusterName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces/',variables('logsAnalyticsWorkspaceName'))]"
+      ],
+      "properties": {
+        "kubernetesVersion": "[variables('kubernetesVersion')]",
+        "dnsPrefix": "[variables('namePrefix')]",
+        "addonProfiles": {
+          "KubeDashboard": {
+            "enabled": false
+          },
+          "omsagent": {
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces/',variables('logsAnalyticsWorkspaceName'))]"
             },
-            "omsagent": {
-              "config": {
-                "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces/',variables('logsAnalyticsWorkspaceName'))]"
-              },
-              "enabled": true
-            }
-          },
-          "agentPoolProfiles": [
-            {
-              "name": "subnet1pool",
-              "orchestratorVersion": "[variables('kubernetesVersion')]",
-              "osDiskSizeGB": "[variables('aksNodeDiskSizeGB')]",
-              "vnetSubnetID": "[variables('subnet1Ref')]",
-              "count": "[variables('aksNodeCount')]",
-              "vmSize": "[variables('aksNodeVmSize')]",
-              "type": "VirtualMachineScaleSets",
-              "mode": "System",
-              "maxPods": 100,
-              "enableNodePublicIP": false,
-              "nodeLabels": {},
-              "osType": "Linux",
-              "storageProfile": "ManagedDisks",
-              "tags": {
-                "function": "quorum"
-              }
-            }
-          ],
-          "enableRBAC": true,
-          "servicePrincipalProfile": {
-            "clientId": "msi"
-          },
-          "podIdentityProfile": {
-            "enabled": true,
-            "userAssignedIdentities": [
-              {
-                "name": "default-pod-identity",
-                "namespace": "default",
-                "identity": {
-                  "resourceId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
-                  "clientId": "[reference(variables('opsManagedIdentity')).clientId]",
-                  "objectId": "[reference(variables('opsManagedIdentity')).principalId]"
-                }
-              }
-            ]
-          },
-          "networkProfile": {
-            "networkPlugin": "azure",
-            "loadBalancerSku": "Standard",
-            "serviceCidr": "10.2.0.0/24",
-            "dnsServiceIP": "10.2.0.10",
-            "dockerBridgeCidr": "172.17.0.1/16",
-            "outboundType": "loadBalancer"
+            "enabled": true
           }
         },
-        "identity": {
-          "type": "UserAssigned",
-          "userAssignedIdentities": {
-            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]": { }
+        "agentPoolProfiles": [
+          {
+            "name": "subnet1pool",
+            "orchestratorVersion": "[variables('kubernetesVersion')]",
+            "osDiskSizeGB": "[variables('aksNodeDiskSizeGB')]",
+            "vnetSubnetID": "[variables('subnet1Ref')]",
+            "count": "[variables('aksNodeCount')]",
+            "vmSize": "[variables('aksNodeVmSize')]",
+            "type": "VirtualMachineScaleSets",
+            "mode": "System",
+            "maxPods": 100,
+            "enableNodePublicIP": false,
+            "nodeLabels": {},
+            "osType": "Linux",
+            "storageProfile": "ManagedDisks",
+            "tags": {
+              "function": "quorum"
+            }
           }
+        ],
+        "enableRBAC": true,
+        "servicePrincipalProfile": {
+          "clientId": "msi"
+        },
+        "podIdentityProfile": {
+          "enabled": true,
+          "userAssignedIdentities": [
+            {
+              "name": "default-pod-identity",
+              "namespace": "default",
+              "identity": {
+                "resourceId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]",
+                "clientId": "[reference(variables('opsManagedIdentity')).clientId]",
+                "objectId": "[reference(variables('opsManagedIdentity')).principalId]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "loadBalancerSku": "Standard",
+          "serviceCidr": "10.2.0.0/24",
+          "dnsServiceIP": "10.2.0.10",
+          "dockerBridgeCidr": "172.17.0.1/16",
+          "outboundType": "loadBalancer"
         }
       },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-aks-admin-ra')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('opsManagedIdentity'))]": { }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-aks-admin-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "properties": {
-            "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('aksClusterAdminRoleId'))]",
-            "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters/', variables('clusterName')), variables('apiVersionManangedClusters'), 'Full').properties.identityProfile.kubeletidentity.objectId]",
-            "scope": "[resourceGroup().id]",
-            "principalType": "ServicePrincipal"
+          "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('aksClusterAdminRoleId'))]",
+          "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters/', variables('clusterName')), variables('apiVersionManangedClusters'), 'Full').properties.identityProfile.kubeletidentity.objectId]",
+          "scope": "[resourceGroup().id]",
+          "principalType": "ServicePrincipal"
         }
-      },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-aks-mi-ra')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-aks-mi-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "properties": {
           "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('managedIdentityOperatorRoleId'))]",
@@ -425,13 +424,13 @@
           "scope": "[resourceGroup().id]",
           "principalType": "ServicePrincipal"
         }
-      },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-aks-nc-ra')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-aks-nc-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "properties": {
           "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('networkContributorRoleId'))]",
@@ -439,13 +438,13 @@
           "scope": "[resourceGroup().id]",
           "principalType": "ServicePrincipal"
         }
-      },
-      {
-        "type": "Microsoft.Authorization/roleAssignments",
-        "apiVersion": "[variables('apiVersionRoleAssignments')]",
-        "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-omsagent-mmp-ra')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[variables('apiVersionRoleAssignments')]",
+      "name": "[guid(resourceGroup().id, deployment().name, variables('clusterName'), '-omsagent-mmp-ra')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "properties": {
           "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('monitoringMetricsPublisherRoleId'))]",
@@ -453,15 +452,15 @@
           "scope": "[resourceGroup().id]",
           "principalType": "ServicePrincipal"
         }
-      },
-      {
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2019-10-01",
-        "name": "nestedTemplateForAKSNodeGroupRoleAssignments",
-        "resourceGroup": "[variables('aksNodeResourceGroupName')]",
-        "subscriptionId": "[subscription().subscriptionId]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "nestedTemplateForAKSNodeGroupRoleAssignments",
+      "resourceGroup": "[variables('aksNodeResourceGroupName')]",
+      "subscriptionId": "[subscription().subscriptionId]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "properties": {
           "mode": "Incremental",
@@ -494,15 +493,15 @@
             ]
           }
         }
-      },
-      {
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2019-10-01",
-        "name": "nestedTemplateForAKSACRRoleAssignments",
-        "resourceGroup": "[resourceGroup().name]",
-        "subscriptionId": "[subscription().subscriptionId]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "nestedTemplateForAKSACRRoleAssignments",
+      "resourceGroup": "[resourceGroup().name]",
+      "subscriptionId": "[subscription().subscriptionId]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "properties": {
           "mode": "Incremental",
@@ -523,13 +522,13 @@
             ]
           }
         }
-      },
-      {
-        "type":"Microsoft.Insights/actionGroups",
-        "apiVersion":"2018-03-01",
-        "name":"[variables('actionGroup')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type":"Microsoft.Insights/actionGroups",
+      "apiVersion":"2018-03-01",
+      "name":"[variables('actionGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
         ],
         "location":"Global",
         "properties":{
@@ -538,27 +537,27 @@
           "smsReceivers":[
           ],
           "emailReceivers":[
-  
+
           ],
           "webhookReceivers":[
           ]
         }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Node working set memory utilization high for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
-        ],
-        "properties":{
-          "description":"[concat('Node working set memory utilization across the cluster. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Node%20working%20set%20memory%20%25')]",
-          "severity":2,
-          "enabled":true,
-          "scopes":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Node working set memory utilization high for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      ],
+      "properties":{
+        "description":"[concat('Node working set memory utilization across the cluster. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Node%20working%20set%20memory%20%25')]",
+        "severity":2,
+        "enabled":true,
+        "scopes":[
+          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
           ],
           "evaluationFrequency":"PT1M",
           "windowSize":"PT5M",
@@ -592,23 +591,23 @@
               "actionGroupId":"[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
             }
           ]
-        }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Node CPU high for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
-        ],
-        "properties":{
-          "description":"[concat('Node CPU utilization across the cluster. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Node%20CPU%20%25')]",
-          "severity":2,
-          "enabled":true,
-          "scopes":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+      }
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Node CPU high for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      ],
+      "properties":{
+        "description":"[concat('Node CPU utilization across the cluster. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Node%20CPU%20%25')]",
+        "severity":2,
+        "enabled":true,
+        "scopes":[
+          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
           ],
           "evaluationFrequency":"PT1M",
           "windowSize":"PT5M",
@@ -642,23 +641,23 @@
               "actionGroupId":"[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
             }
           ]
-        }
-      },
-          {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Container working set memory usage high for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
-        ],
-        "properties":{
-          "description":"[concat('Container working set memory utilization. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Container%20working%20set%20memory%20%25')]",
-          "severity":2,
-          "enabled":true,
-          "scopes":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+      }
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Container working set memory usage high for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      ],
+      "properties":{
+        "description":"[concat('Container working set memory utilization. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Container%20working%20set%20memory%20%25')]",
+        "severity":2,
+        "enabled":true,
+        "scopes":[
+          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
           ],
           "evaluationFrequency":"PT1M",
           "windowSize":"PT5M",
@@ -699,16 +698,16 @@
               "actionGroupId":"[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
             }
           ]
-        }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Container CPU usage high for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      }
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Container CPU usage high for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
         ],
         "properties":{
           "description":"[concat('Container CPU utilization. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Container%20CPU%20%25')]",
@@ -757,16 +756,16 @@
             }
           ]
         }
-      },
-  
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Disk usage high for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-  "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+    },
+
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Disk usage high for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
         ],
         "properties":{
           "description":"[concat('Disk usage for all nodes and storage devices. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Node%20Disk%20Usage%20%25')]",
@@ -815,22 +814,22 @@
             }
           ]
         }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Persistent volume usage high for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
-        ],
-        "properties":{
-          "description":"[concat('persistent volume utilization. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Persistent%20Volume%20Usage%20%25')]",
-          "severity": 2,
-          "enabled":true,
-          "scopes":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Persistent volume usage high for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      ],
+      "properties":{
+        "description":"[concat('persistent volume utilization. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Persistent%20Volume%20Usage%20%25')]",
+        "severity": 2,
+        "enabled":true,
+        "scopes":[
+          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
           ],
           "evaluationFrequency":"PT1M",
           "windowSize":"PT5M",
@@ -870,23 +869,23 @@
               "actionGroupId":"[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
             }
           ]
-        }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Containers getting OOM killed for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
-        ],
-        "properties":{
-          "description":"[concat('Containers getting OOM killed. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=OOM%20Killed%20Containers')]",
-          "severity":1,
-          "enabled":true,
-          "scopes":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+      }
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Containers getting OOM killed for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      ],
+      "properties":{
+        "description":"[concat('Containers getting OOM killed. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=OOM%20Killed%20Containers')]",
+        "severity":1,
+        "enabled":true,
+        "scopes":[
+          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
           ],
           "evaluationFrequency":"PT1M",
           "windowSize":"PT1M",
@@ -906,11 +905,11 @@
                     ]
                   },
                   {
-                      "name": "controllerName",
-                      "operator": "Include",
-                      "values": [
-                          "*"
-                      ]
+                    "name": "controllerName",
+                    "operator": "Include",
+                    "values": [
+                      "*"
+                    ]
                   }
                 ],
                 "operator":"GreaterThan",
@@ -927,23 +926,23 @@
               "actionGroupId":"[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
             }
           ]
-        }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('Pods in failed state for ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
-        ],
-        "properties":{
-          "description":"[concat('Pods in failed state. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Failed%20Pod%20counts')]",
-          "severity":1,
-          "enabled":true,
-          "scopes":[
-            "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
+      }
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('Pods in failed state for ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      ],
+      "properties":{
+        "description":"[concat('Pods in failed state. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Failed%20Pod%20counts')]",
+        "severity":1,
+        "enabled":true,
+        "scopes":[
+          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
           ],
           "evaluationFrequency":"PT1M",
           "windowSize":"PT5M",
@@ -977,16 +976,16 @@
               "actionGroupId":"[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
             }
           ]
-        }
-      },
-      {
-        "type":"microsoft.insights/metricAlerts",
-        "apiVersion":"2018-03-01",
-        "name":"[concat('High restart count for containers in ', variables('clusterName'))]",
-        "location":"global",
-        "dependsOn":[
-          "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
-          "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
+      }
+    },
+    {
+      "type":"microsoft.insights/metricAlerts",
+      "apiVersion":"2018-03-01",
+      "name":"[concat('High restart count for containers in ', variables('clusterName'))]",
+      "location":"global",
+      "dependsOn":[
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Insights/actionGroups', variables('actionGroup'))]"
         ],
         "properties":{
           "description":"[concat('High number of containers restarting across the cluster. Check insights here: https://portal.azure.com/#resource', resourceGroup().id, '/providers/microsoft.containerservice/managedclusters/', variables('clusterName'), '/infrainsights?feature.citracealert=Restarting%20container%20count')]",
@@ -1016,7 +1015,7 @@
                     "name": "controllerName",
                     "operator": "Include",
                     "values": [
-                        "*"
+                      "*"
                     ]
                   }
                 ],
@@ -1035,20 +1034,17 @@
             }
           ]
         }
-      }
-  
-      
-    ],
-    "outputs": {
-      "cluster": {
-        "type": "string",
-        "value": "[variables('clusterName')]"
-      },
-      "managedIdentity": {
-        "type": "string",
-        "value": "[variables('opsManagedIdentity')]"
-      }
-
     }
-  
+  ],
+  "outputs": {
+    "cluster": {
+      "type": "string",
+      "value": "[variables('clusterName')]"
+    },
+    "managedIdentity": {
+      "type": "string",
+      "value": "[variables('opsManagedIdentity')]"
+    }
+
   }
+}
