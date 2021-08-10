@@ -379,7 +379,9 @@
             "mode": "System",
             "maxPods": 100,
             "enableNodePublicIP": false,
-            "nodeLabels": {},
+            "nodeLabels": {
+              "env": "dev"
+            },
             "osType": "Linux",
             "storageProfile": "ManagedDisks",
             "tags": {
@@ -397,7 +399,9 @@
             "mode": "System",
             "maxPods": 100,
             "enableNodePublicIP": false,
-            "nodeLabels": {},
+            "nodeLabels": {
+              "env": "prod"
+            },
             "osType": "Linux",
             "storageProfile": "ManagedDisks",
             "tags": {
