@@ -64,8 +64,6 @@
     "devAksNodeDiskSizeGB": 50,
     "prodAksNodeCount": 4,
     "prodAksNodeDiskSizeGB": 100,
-    "devKeyVaultName": "[concat(parameters('bcClient'), '-dev-vault')]",
-    "devKeyVaultRef": "[resourceId('Microsoft.KeyVault/vaults', variables('devKeyVaultName'))]",
     "prodKeyVaultName": "[concat(parameters('bcClient'), '-prod-vault')]",
     "prodKeyVaultRef": "[resourceId('Microsoft.KeyVault/vaults', variables('prodKeyVaultName'))]",
     "logsAnalyticsWorkspaceName": "[concat(parameters('bcClient'), '-logs')]",
@@ -191,67 +189,6 @@
             }
           }
         ]
-      }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults",
-      "apiVersion": "[variables('apiVersionKeyVault')]",
-      "name": "[variables('devKeyVaultName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('devSubnetName'))]"
-      ],
-      "properties": {
-        "enableSoftDelete": true,
-        "enabledForDeployment": true,
-        "enabledForDiskEncryption": false,
-        "enabledForTemplateDeployment": false,
-        "tenantId": "[subscription().tenantId]",
-        "accessPolicies": [
-          {
-            "tenantId": "[reference(variables('opsManagedIdentity')).tenantId]",
-            "objectId": "[reference(variables('opsManagedIdentity')).principalId]",
-            "permissions": {
-              "keys": [
-                "get"
-              ],
-              "secrets": [
-                "get",
-                "set"
-              ]
-            }
-          }
-        ],
-        "sku": {
-          "name": "premium",
-          "family": "A"
-        },
-        "networkAcls": {
-          "defaultAction": "Deny",
-          "bypass": "AzureServices",
-          "virtualNetworkRules": [
-            {
-              "id": "[variables('devSubnetRef')]"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-      "apiVersion": "2018-09-01-preview",
-      "name": "[concat(variables('devKeyVaultName'),'/Microsoft.Authorization/', guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-akv-reader-ra'))]",
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', variables('devKeyVaultName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]"
-      ],
-      "properties": {
-        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleId'))]",
-        "principalId": "[reference(resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',variables('opsManagedIdentity')), '2018-11-30').principalId]",
-        "scope": "[variables('devKeyVaultRef')]",
-        "principalType": "ServicePrincipal"
       }
     },
     {
