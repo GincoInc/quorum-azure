@@ -114,6 +114,8 @@ spec:
           - "curl -X GET --connect-timeout 30 --max-time 10 --retry 6 --retry-delay 0 --retry-max-time 300 quorum-node-bootnode-1.{{ .Release.Namespace }}.svc.cluster.local:8545/"
 {{- end}}
 
+      nodeSelector:
+        env: {{ .Release.Namespace }}
       containers:
 
       {{- if .Values.nodeFlags.privacy }}

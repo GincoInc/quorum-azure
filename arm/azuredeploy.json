@@ -24,16 +24,9 @@
       "type": "string"
     },
     "devSubnetAddressCIDR": {
-      "defaultValue": "10.0.0.0/20",
+      "defaultValue": "10.0.0.0/16",
       "metadata": {
         "description": "Subnet1 Address Prefix"
-      },
-      "type": "string"
-    },
-    "prodSubnetAddressCIDR": {
-      "defaultValue": "10.0.16.0/20",
-      "metadata": {
-        "description": "Subnet2 Address Prefix"
       },
       "type": "string"
     }
@@ -136,26 +129,6 @@
               }
             ]
           }
-        },
-        {
-          "type": "subnets",
-          "apiVersion": "[variables('apiVersionVirtualNetworks')]",
-          "name": "[variables('prodSubnetName')]",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-          ],
-          "properties": {
-            "addressPrefix": "[parameters('prodSubnetAddressCIDR')]",
-            "delegations": [],
-            "privateEndpointNetworkPolicies": "Enabled",
-            "privateLinkServiceNetworkPolicies": "Enabled",
-            "serviceEndpoints": [
-              {
-                "service": "Microsoft.KeyVault"
-              }
-            ]
-          }
         }
       ]
     },
@@ -166,8 +139,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('devSubnetName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('prodSubnetName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('devSubnetName'))]"
       ],
       "tags": {
         "displayName": "Network Security Group"
@@ -190,68 +162,7 @@
           }
         ]
       }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults",
-      "apiVersion": "[variables('apiVersionKeyVault')]",
-      "name": "[variables('prodKeyVaultName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('prodSubnetName'))]"
-      ],
-      "properties": {
-        "enableSoftDelete": true,
-        "enabledForDeployment": true,
-        "enabledForDiskEncryption": false,
-        "enabledForTemplateDeployment": false,
-        "tenantId": "[subscription().tenantId]",
-        "accessPolicies": [
-          {
-            "tenantId": "[reference(variables('opsManagedIdentity')).tenantId]",
-            "objectId": "[reference(variables('opsManagedIdentity')).principalId]",
-            "permissions": {
-              "keys": [
-                "get"
-              ],
-              "secrets": [
-                "get",
-                "set"
-              ]
-            }
-          }
-        ],
-        "sku": {
-          "name": "premium",
-          "family": "A"
-        },
-        "networkAcls": {
-          "defaultAction": "Deny",
-          "bypass": "AzureServices",
-          "virtualNetworkRules": [
-            {
-              "id": "[variables('prodSubnetRef')]"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-      "apiVersion": "2018-09-01-preview",
-      "name": "[concat(variables('prodKeyVaultName'),'/Microsoft.Authorization/', guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-akv-reader-ra'))]",
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', variables('prodKeyVaultName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]"
-      ],
-      "properties": {
-        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleId'))]",
-        "principalId": "[reference(resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',variables('opsManagedIdentity')), '2018-11-30').principalId]",
-        "scope": "[variables('prodKeyVaultRef')]",
-        "principalType": "ServicePrincipal"
-      }
-    },
+    }
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "[variables('apiVersionRoleAssignments')]",
@@ -350,7 +261,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('devSubnetName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('prodSubnetName'))]",
         "[resourceId('Microsoft.OperationalInsights/workspaces/',variables('logsAnalyticsWorkspaceName'))]"
       ],
       "properties": {
@@ -381,26 +291,6 @@
             "enableNodePublicIP": false,
             "nodeLabels": {
               "env": "dev"
-            },
-            "osType": "Linux",
-            "storageProfile": "ManagedDisks",
-            "tags": {
-              "function": "quorum"
-            }
-          },
-          {
-            "name": "subnet2pool",
-            "orchestratorVersion": "[variables('kubernetesVersion')]",
-            "osDiskSizeGB": "[variables('prodAksNodeDiskSizeGB')]",
-            "vnetSubnetID": "[variables('prodSubnetRef')]",
-            "count": "[variables('prodAksNodeCount')]",
-            "vmSize": "[variables('aksNodeVmSize')]",
-            "type": "VirtualMachineScaleSets",
-            "mode": "System",
-            "maxPods": 100,
-            "enableNodePublicIP": false,
-            "nodeLabels": {
-              "env": "prod"
             },
             "osType": "Linux",
             "storageProfile": "ManagedDisks",

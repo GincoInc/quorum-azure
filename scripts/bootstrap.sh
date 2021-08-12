@@ -35,13 +35,13 @@ az aks pod-identity add \
     --name default-pod-identity >/dev/null
 
 
-echo "Provisioning CSI drivers... "
+# echo "Provisioning CSI drivers... "
 az aks get-credentials --resource-group "$AKS_RESOURCE_GROUP" --name "$AKS_CLUSTER_NAME" --admin  
-# Helm charts for KeyVault drivers
-helm repo add stable https://charts.helm.sh/stable  
-helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts  
-helm repo update 
-helm upgrade --install --namespace "$AKS_NAMESPACE" --create-namespace akv-secrets-csi-driver csi-secrets-store-provider-azure/csi-secrets-store-provider-azure  
-helm ls --namespace "$AKS_NAMESPACE"
-
-echo "Done... "
+# # Helm charts for KeyVault drivers
+# helm repo add stable https://charts.helm.sh/stable  
+# helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts  
+# helm repo update 
+# helm upgrade --install --namespace "$AKS_NAMESPACE" --create-namespace akv-secrets-csi-driver csi-secrets-store-provider-azure/csi-secrets-store-provider-azure  
+# helm ls --namespace "$AKS_NAMESPACE"
+# 
+# echo "Done... "

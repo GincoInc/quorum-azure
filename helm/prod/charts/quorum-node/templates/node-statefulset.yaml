@@ -106,6 +106,8 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "quorum-node.fullname" . }}-sa
+      nodeSelector:
+        env: {{ .Release.Namespace }}
       containers:
 
       {{- if .Values.nodeFlags.privacy }}
