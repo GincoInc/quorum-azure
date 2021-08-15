@@ -31,7 +31,7 @@
         "type": "string"
       },
       "subnet1AddressCIDR": {
-        "defaultValue": "10.0.0.0/16",
+        "defaultValue": "10.0.0.0/20",
         "metadata": {
           "description": "Subnet1 Address Prefix"
         },
@@ -60,7 +60,7 @@
       "clusterName": "[concat(variables('namePrefix'), '-cluster')]",
       "aksNodeResourceGroupName": "[concat('MC_', resourceGroup().name, '_', variables('clusterName'), '_', parameters('location'))]",
       "aksNodeResourceGroupId": "[concat(subscription().id, '/resourcegroups/', variables('aksNodeResourceGroupName'))]",
-      "aksNodeCount": 6,
+      "aksNodeCount": 2,
       "aksNodeVmSize": "Standard_D2a_v4",
       "aksNodeDiskSizeGB": 100,
       "keyVaultName": "[concat(variables('namePrefix'), '-vault')]",
@@ -130,11 +130,7 @@
               "delegations": [],
               "privateEndpointNetworkPolicies": "Enabled",
               "privateLinkServiceNetworkPolicies": "Enabled",
-              "serviceEndpoints": [
-                {
-                  "service": "Microsoft.KeyVault"
-                }
-              ]
+              "serviceEndpoints": []
             }
           }
         ]
@@ -168,67 +164,6 @@
               }
             }
           ]
-        }
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults",
-        "apiVersion": "[variables('apiVersionKeyVault')]",
-        "name": "[variables('keyVaultName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
-        ],
-        "properties": {
-          "enableSoftDelete": true,
-          "enabledForDeployment": true,
-          "enabledForDiskEncryption": false,
-          "enabledForTemplateDeployment": false,
-          "tenantId": "[subscription().tenantId]",
-          "accessPolicies": [
-            {
-              "tenantId": "[reference(variables('opsManagedIdentity')).tenantId]",
-              "objectId": "[reference(variables('opsManagedIdentity')).principalId]",
-              "permissions": {
-                "keys": [
-                  "get"
-                ],
-                "secrets": [
-                  "get",
-                  "set"
-                ]
-              }
-            }
-          ],
-          "sku": {
-            "name": "premium",
-            "family": "A"
-          },
-          "networkAcls": {
-            "defaultAction": "Deny",
-            "bypass": "AzureServices",
-            "virtualNetworkRules": [
-              {
-                "id": "[variables('subnet1Ref')]"
-              }
-            ]
-          }
-        }
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-        "apiVersion": "2018-09-01-preview",
-        "name": "[concat(variables('keyVaultName'),'/Microsoft.Authorization/', guid(resourceGroup().id, deployment().name, variables('opsManagedIdentity'), '-akv-reader-ra'))]",
-        "dependsOn": [
-          "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
-          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]"
-        ],
-        "properties": {
-          "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleId'))]",
-          "principalId": "[reference(resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',variables('opsManagedIdentity')), '2018-11-30').principalId]",
-          "scope": "[variables('keyVaultRef')]",
-          "principalType": "ServicePrincipal"
         }
       },
       {
@@ -357,7 +292,9 @@
               "mode": "System",
               "maxPods": 100,
               "enableNodePublicIP": false,
-              "nodeLabels": {},
+              "nodeLabels": {
+                "env": "dev"
+              },
               "osType": "Linux",
               "storageProfile": "ManagedDisks",
               "tags": {
