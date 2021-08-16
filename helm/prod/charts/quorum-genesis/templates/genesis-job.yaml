@@ -72,6 +72,8 @@ spec:
     spec:
       serviceAccountName: {{ include "quorum-genesis.name" . }}-sa
       restartPolicy: "Never"
+      nodeSelector:
+        env: prod
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

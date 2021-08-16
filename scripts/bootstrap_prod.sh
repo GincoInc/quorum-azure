@@ -41,7 +41,11 @@ az aks get-credentials --resource-group "$AKS_RESOURCE_GROUP" --name "$AKS_CLUST
 helm repo add stable https://charts.helm.sh/stable  
 helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts  
 helm repo update 
-helm upgrade --install --namespace "$AKS_NAMESPACE" --create-namespace akv-secrets-csi-driver csi-secrets-store-provider-azure/csi-secrets-store-provider-azure  
+helm upgrade \
+    --install \
+    --namespace akv-secrets-csi-driver \
+    --create-namespace akv-secrets-csi-driver \
+    csi-secrets-store-provider-azure/csi-secrets-store-provider-azure 
 helm ls --namespace "$AKS_NAMESPACE"
 
 echo "Done... "

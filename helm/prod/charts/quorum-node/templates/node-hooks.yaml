@@ -68,6 +68,8 @@ spec:
     spec:
       serviceAccountName: {{ include "quorum-node.fullname" . }}-hooks-sa
       restartPolicy: "OnFailure"
+      nodeSelector:
+        env: prod
       containers:
       - name: {{ template "quorum-node.fullname" . }}-quorum-pre-start-hook
         image: "{{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}"
@@ -186,6 +188,8 @@ spec:
     spec:
       serviceAccountName: {{ include "quorum-node.fullname" . }}-hooks-sa
       restartPolicy: "OnFailure"
+      nodeSelector:
+        env: prod
       containers:
         - name: {{ template "quorum-node.fullname" . }}-node-pre-delete-hook
           image: "{{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}"
