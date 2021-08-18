@@ -38,7 +38,7 @@ subjects:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ include "quorum-node.fullname" . }}-storage
+  name: {{ .Release.Namespace }}-{{ include "quorum-node.fullname" . }}-storage
 provisioner: kubernetes.io/azure-file
 mountOptions:
   - dir_mode=0755
@@ -47,6 +47,7 @@ mountOptions:
   - gid=0
   - mfsymlinks
 allowVolumeExpansion: true
+reclaimPolicy: Retain
 parameters:
   skuName: Standard_LRS
 
@@ -60,7 +61,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ include "quorum-node.fullname" . }}-storage
+  storageClassName: {{ .Release.Namespace }}-{{ include "quorum-node.fullname" . }}-storage
   resources:
     requests:
       storage: "{{ .Values.node.quorumConfig.storage.pvcSizeLimit }}"
@@ -114,6 +115,8 @@ spec:
           - "curl -X GET --connect-timeout 30 --max-time 10 --retry 6 --retry-delay 0 --retry-max-time 300 quorum-node-bootnode-1.{{ .Release.Namespace }}.svc.cluster.local:8545/"
 {{- end}}
 
+      nodeSelector:
+        env: dev
       containers:
 
       {{- if .Values.nodeFlags.privacy }}
