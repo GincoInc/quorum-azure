@@ -23,17 +23,10 @@
         },
         "type": "string"
       },
-      "subnet1AddressCIDR": {
-        "defaultValue": "10.0.0.0/20",
-        "metadata": {
-          "description": "Subnet1 Address Prefix"
-        },
-        "type": "string"
-      },
-      "subnet2AddressCIDR": {
+      "subnetAddressCIDR": {
         "defaultValue": "10.0.16.0/20",
         "metadata": {
-          "description": "Subnet2 Address Prefix"
+          "description": "Subnet Address Prefix"
         },
         "type": "string"
       }
@@ -47,27 +40,22 @@
       "apiVersionRoleAssignments": "2018-09-01-preview",
       "apiVersionKeyVault": "2018-02-14",
       "apiVersionLogAnalytics": "2020-03-01-preview",
-      "kubernetesVersion": "1.20.9",
+      "kubernetesVersion": "1.22.11",
       "uniqueStr": "[toLower(substring(uniqueString(resourceGroup().id, deployment().name), 0, 8))]",
       "namePrefix": "peer-trust",
       "vnetName": "[concat(variables('namePrefix'), '-vnet')]",
       "vnetRef": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-      "subnet1Name": "[concat(variables('namePrefix'), '-subnet1')]",
-      "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
-      "subnet2Name": "[concat(variables('namePrefix'), '-subnet2')]",
-      "subnet2Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet2Name'))]",
+      "subnetName": "[concat(variables('namePrefix'), '-subnet')]",
+      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]",
       "nsgName": "[concat(variables('namePrefix'), '-nsg')]",
       "opsManagedIdentity": "[concat(variables('namePrefix'), '-ops-identity')]",
       "acrName": "peertrustregistry",
       "clusterName": "[concat(variables('namePrefix'), '-cluster')]",
       "aksNodeResourceGroupName": "[concat('MC_', resourceGroup().name, '_', variables('clusterName'), '_', parameters('location'))]",
       "aksNodeResourceGroupId": "[concat(subscription().id, '/resourcegroups/', variables('aksNodeResourceGroupName'))]",
-      "subnet1poolAksNodeCount": 1,
-      "subnet1poolAksNodeVmSize": "Standard_D4a_v4",
-      "subnet2poolAksNodeCount": 1,
-      "subnet2poolAksNodeVmSize": "Standard_D8a_v4",
-      "subnet1poolAksNodeDiskSizeGB": 100,
-      "subnet2poolAksNodeDiskSizeGB": 200,
+      "subnetpoolAksNodeCount": 1,
+      "subnetpoolAksNodeVmSize": "Standard_D8a_v4",
+      "subnetpoolAksNodeDiskSizeGB": 200,
       "keyVaultName": "[concat(variables('namePrefix'), '-vault')]",
       "keyVaultRef": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
       "logsAnalyticsWorkspaceName": "[concat(variables('namePrefix'), '-logs')]",
@@ -125,34 +113,13 @@
           {
             "type": "subnets",
             "apiVersion": "[variables('apiVersionVirtualNetworks')]",
-            "name": "[variables('subnet1Name')]",
+            "name": "[variables('subnetName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
               "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
             ],
             "properties": {
-              "addressPrefix": "[parameters('subnet1AddressCIDR')]",
-              "delegations": [],
-              "privateEndpointNetworkPolicies": "Enabled",
-              "privateLinkServiceNetworkPolicies": "Enabled",
-              "serviceEndpoints": [
-                {
-                  "service": "Microsoft.KeyVault"
-                }
-              ]
-            }
-          },
-          {
-            "type": "subnets",
-            "apiVersion": "[variables('apiVersionVirtualNetworks')]",
-            "name": "[variables('subnet2Name')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-              "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-              "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]"
-            ],
-            "properties": {
-              "addressPrefix": "[parameters('subnet2AddressCIDR')]",
+              "addressPrefix": "[parameters('subnetAddressCIDR')]",
               "delegations": [],
               "privateEndpointNetworkPolicies": "Enabled",
               "privateLinkServiceNetworkPolicies": "Enabled",
@@ -172,8 +139,7 @@
         "location": "[parameters('location')]",
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet2Name'))]"
+          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
         ],
         "tags": {
           "displayName": "Network Security Group"
@@ -205,8 +171,7 @@
         "dependsOn": [
           "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('opsManagedIdentity'))]",
           "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet2Name'))]"
+          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
         ],
         "properties": {
           "enableSoftDelete": true,
@@ -238,10 +203,7 @@
             "bypass": "AzureServices",
             "virtualNetworkRules": [
               {
-                "id": "[variables('subnet1Ref')]"
-              },
-              {
-                "id": "[variables('subnet2Ref')]"
+                "id": "[variables('subnetRef')]"
               }
             ]
           }
@@ -359,8 +321,7 @@
         "location": "[parameters('location')]",
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet1Name'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnet2Name'))]",
+          "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]",
           "[resourceId('Microsoft.OperationalInsights/workspaces/',variables('logsAnalyticsWorkspaceName'))]"
         ],
         "properties": {
@@ -379,32 +340,12 @@
           },
           "agentPoolProfiles": [
             {
-              "name": "subnet1pool",
+              "name": "subnetpool",
               "orchestratorVersion": "[variables('kubernetesVersion')]",
-              "osDiskSizeGB": "[variables('subnet1poolAksNodeDiskSizeGB')]",
-              "vnetSubnetID": "[variables('subnet1Ref')]",
-              "count": "[variables('subnet1poolAksNodeCount')]",
-              "vmSize": "[variables('subnet1poolAksNodeVmSize')]",
-              "type": "VirtualMachineScaleSets",
-              "mode": "System",
-              "maxPods": 100,
-              "enableNodePublicIP": false,
-              "nodeLabels": {
-                "env": "dev"
-              },
-              "osType": "Linux",
-              "storageProfile": "ManagedDisks",
-              "tags": {
-                "function": "quorum"
-              }
-            },
-            {
-              "name": "subnet2pool",
-              "orchestratorVersion": "[variables('kubernetesVersion')]",
-              "osDiskSizeGB": "[variables('subnet2poolAksNodeDiskSizeGB')]",
-              "vnetSubnetID": "[variables('subnet2Ref')]",
-              "count": "[variables('subnet2poolAksNodeCount')]",
-              "vmSize": "[variables('subnet2poolAksNodeVmSize')]",
+              "osDiskSizeGB": "[variables('subnetpoolAksNodeDiskSizeGB')]",
+              "vnetSubnetID": "[variables('subnetRef')]",
+              "count": "[variables('subnetpoolAksNodeCount')]",
+              "vmSize": "[variables('subnetpoolAksNodeVmSize')]",
               "type": "VirtualMachineScaleSets",
               "mode": "System",
               "maxPods": 100,
